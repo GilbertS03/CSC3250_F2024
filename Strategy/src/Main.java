@@ -70,13 +70,12 @@ public class Main {
     public static void main(String[] args) {
         AllStudents students = new AllStudents();
         AllCourses courses = new AllCourses();
-        Enrollment enrollment = new Enrollment();
+        Enrollment enrollment = new Enrollment(students);
         Scanner scan = new Scanner(System.in);
         int choice = menu(scan);
         while (choice != 8){
             processChoice(choice, students, courses, enrollment, scan);
             choice = menu(scan);
         }
-
     }
 }

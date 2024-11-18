@@ -1,10 +1,19 @@
 import java.util.*;
-public class Enrollment {
+public class Enrollment implements Observer{
     // course id is key, value is student ids
     private HashMap<String, ArrayList<String>> _enroll;
-    public Enrollment(){
+    private Subject _subject;
+
+    public Enrollment(Subject s){
         _enroll = new HashMap<String, ArrayList<String>>();
+        _subject = s;
+        s.subscribe(this);
     }
+
+    public void update(String id){
+        dropStudentFromAllCourses(id);
+    }
+
     public void dropCourse(String c){
         if (_enroll.containsKey(c))
             _enroll.remove(c);
