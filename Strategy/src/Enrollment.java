@@ -1,4 +1,5 @@
 import java.util.*;
+//implement subject as well
 public class Enrollment implements Observer{
     // course id is key, value is student ids
     private HashMap<String, ArrayList<String>> _enroll;
