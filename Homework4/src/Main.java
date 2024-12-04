@@ -38,6 +38,7 @@ class NewsFeed {
             String[] news = infile.nextLine().split(",");
             _newsFeed.add(new Feed(news[0], news[1]));
         }
+        infile.close();
     }
     public Feed getRandomFeed(){
         //random number generator to pick random number from 0 to size of arraylist
@@ -56,13 +57,53 @@ interface AnalysisBehavior {
 }
 
 // Task: Complete Class CountIfAnalysis
+//For this one, I was trying to think of ways to do this in linear time but could not find a way. I had to use two
+//while loops because I needed to iterate through the words, then I needed to iterate through the letters to see
+//they would match up. I did a while loop for a non-exhaustive search in order to get out of the loop if need be.
+//The first loop will see if the lengths will match up and if they don't, then it will skip that word and go to the next. 
+//The second loop will check each char of each word and make sure they are equivalent. I think a double would be good 
+//because if someone types in letters of a word and not the whole word, it could show  that part of the the small input 
+//is part of something larger. It returns 1 if it is found and 0 if it is not
 class CountIfAnalysis implements AnalysisBehavior {
-
-
+    public double analyze(String[] words, String searchWord){
+        int i = 0;
+        int j = 0;
+        boolean found = false;
+        boolean equality = true;
+        int len = searchWord.length();
+        searchWord = searchWord.toLowerCase();
+        while(i < words.length && !found){
+            equality = true;
+            j = 0;
+            if(words[i].length() != searchWord.length()){
+                i++;
+            }
+            else{
+                while(j < len && equality){
+                    if(words[i].charAt(j) != searchWord.charAt(j)){
+                        equality = false;
+                    }
+                }
+                if(equality){
+                    found = true;
+                }
+            }
+        }
+        if(equality && found){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
 }
 // Task: Complete Class CountAllAnalysis
 class CountAllAnalysis implements AnalysisBehavior {
+    public double analyze(String[] words, String searchWord){
+        for(int i = 0; i < words.length; i++){
 
+        }
+    }
 
 }
 
@@ -105,7 +146,7 @@ abstract class SocialMediaPlatform implements Subject {
             observer.update(f, _name);
     }
     public void generateFeed(NewsFeed nf){
-
+       
     }
     public double analyzeFeed(String w, AnalysisBehavior ab){
 
@@ -124,16 +165,19 @@ class Instagram extends SocialMediaPlatform {
         super("Instagram", 30);  // 30% update rate
     }
 }
-
+//I chose Facebook because it is a very well known platform with many users
+//and a 50% update rate because many people use this smp so it updates frequently
 class Facebook extends SocialMediaPlatform{
     public Facebook(){
-        super("Facebook", 50);
+        super("Facebook", 50); //50% update rate
     }
 }
-
+//I chose Twitter (X) because this is where news gets around the quickest and
+//many people use this to also spread misinformation. I chose 80% update rate
+//because many people tweet about news and misinformation all the time on this app
 class Twitter extends SocialMediaPlatform{
     public Twitter(){
-        super("Twitter", 20);
+        super("Twitter", 80); //80% update rate
     }
 }
 
@@ -219,7 +263,16 @@ public class Main {
         }
 
         // Run a simulation to generate random feeds for the SMPs
-
+        Random rand = new Random();
+        int x;
+        for(int i = 0; i < 20; i++){
+            x = rand.nextInt(0, 100);
+            for(int j = 0; j < platforms.size(); j++){
+                if(x <= platforms.get(j).getRate()){
+                    
+                }
+            }
+        }
 
         // Perform analysis
         AnalysisBehavior ab = new CountAllAnalysis();
