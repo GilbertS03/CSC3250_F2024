@@ -73,6 +73,10 @@ class CountIfAnalysis implements AnalysisBehavior {
         int len = searchWord.length();
         searchWord = searchWord.toLowerCase();
         while(i < words.length && !found){
+            words[i] = words[i].toLowerCase();
+            if(words[i].charAt(words[i].length()-1) == ',' || words[i].charAt(words[i].length()-1) == '\''){
+                words[i] = words[i].substring(0, words[i].length()-1);
+            }
             equality = true;
             j = 0;
             if(words[i].length() != searchWord.length()){
@@ -82,6 +86,9 @@ class CountIfAnalysis implements AnalysisBehavior {
                 while(j < len && equality){
                     if(words[i].charAt(j) != searchWord.charAt(j)){
                         equality = false;
+                    }
+                    else{
+                        j++;
                     }
                 }
                 if(equality){
@@ -98,11 +105,40 @@ class CountIfAnalysis implements AnalysisBehavior {
     }
 }
 // Task: Complete Class CountAllAnalysis
+//I took a lot of inspriration from the last class where I would iterate through the words to find a word that matched the
+//length of the word we are looking for. If it is not equal, skip the word and go to the next. If it is equal, then iterate
+//through the letters of each word and check if they are equivalent. If they are equivalent, then add one to a counter that
+//counts up the number of words it found. I decided to use a for loop exhaustive pattern for this one in order to go through
+//all the words and determine the total number of words that were found to be the same.
 class CountAllAnalysis implements AnalysisBehavior {
     public double analyze(String[] words, String searchWord){
+        int j = 0;
+        int len = searchWord.length();
+        boolean equality = true;
+        int ctr = 0;
+        searchWord = searchWord.toLowerCase();
         for(int i = 0; i < words.length; i++){
-
+            words[i] = words[i].toLowerCase();
+            if(words[i].charAt(words[i].length()-1) == ',' || words[i].charAt(words[i].length()-1) == '\''){
+                words[i] = words[i].substring(0, words[i].length()-1);
+            }
+            j = 0;
+            equality = true;
+            if(words[i].length() == searchWord.length()){
+                while(j < len && equality){
+                    if(words[i].charAt(j) != searchWord.charAt(j)){
+                        equality = false;
+                    }
+                    else{
+                        j++;
+                    }
+                }
+                if(equality){
+                    ctr++;
+                }
+            }
         }
+        return ctr;
     }
 
 }
@@ -145,11 +181,24 @@ abstract class SocialMediaPlatform implements Subject {
         for (Observer observer : _observers)
             observer.update(f, _name);
     }
+    //This gets a random number to see if it will pass the update rate and if it does then it puts the feed
+    //into the ArrayList and notifies the observers with the feed.
     public void generateFeed(NewsFeed nf){
-       
+       Random rand = new Random();
+       int x = rand.nextInt(0, 100);
+       if(x <= _updateRate){
+            Feed f = nf.getRandomFeed();
+            addFeed(f);
+            notifyObservers(f);
+       }
     }
+    //Get random feed to analyze, convert it to a String array, thenuse the analysis behavior to get the number
     public double analyzeFeed(String w, AnalysisBehavior ab){
-
+        Random rand = new Random();
+        int idx = rand.nextInt(0, _feed.size()-1);
+        Feed f = _feed.get(idx);
+        String[] words = f.getDesc().split(" ");
+        return ab.analyze(words, w);
     }
     public String toString(){
         String s = "";
@@ -257,21 +306,22 @@ public class Main {
 
         // Create Users and subscribe
         User user1 = new User("Alice");
-        user1.addPlatform(instagramFactory.createPlatform());
-        for(int i = 0; i < platforms.size(); i++) {
+        User user2 = new User("Chris");
+        User user3 = new User("Aaron");
+        
+        for(int i = 0; i < platforms.size(); i++){
+            user1.addPlatform(platforms.get(i));
+            user2.addPlatform(platforms.get(i));
+            user3.addPlatform(platforms.get(i));
             platforms.get(i).subscribe(user1);
+            platforms.get(i).subscribe(user2);
+            platforms.get(i).subscribe(user3);
         }
-
         // Run a simulation to generate random feeds for the SMPs
-        Random rand = new Random();
-        int x;
         for(int i = 0; i < 20; i++){
-            x = rand.nextInt(0, 100);
-            for(int j = 0; j < platforms.size(); j++){
-                if(x <= platforms.get(j).getRate()){
-                    
-                }
-            }
+            platforms.get(0).generateFeed(nf);
+            platforms.get(1).generateFeed(nf);
+            platforms.get(2).generateFeed(nf);
         }
 
         // Perform analysis
