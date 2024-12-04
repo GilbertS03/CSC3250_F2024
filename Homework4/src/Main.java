@@ -35,7 +35,7 @@ class NewsFeed {
         Scanner infile = new Scanner(new File(fileName));
         //Gets a new line every iteration and splits it by semicolon for title and description
         while(infile.hasNext()){
-            String[] news = infile.nextLine().split(",");
+            String[] news = infile.nextLine().split(";");
             _newsFeed.add(new Feed(news[0], news[1]));
         }
         infile.close();
@@ -62,7 +62,7 @@ interface AnalysisBehavior {
 //they would match up. I did a while loop for a non-exhaustive search in order to get out of the loop if need be.
 //The first loop will see if the lengths will match up and if they don't, then it will skip that word and go to the next. 
 //The second loop will check each char of each word and make sure they are equivalent. I think a double would be good 
-//because if someone types in letters of a word and not the whole word, it could show  that part of the the small input 
+//because if someone types in letters of a word and not the whole word, it could show  that part of the small input
 //is part of something larger. It returns 1 if it is found and 0 if it is not
 class CountIfAnalysis implements AnalysisBehavior {
     public double analyze(String[] words, String searchWord){
@@ -188,11 +188,10 @@ abstract class SocialMediaPlatform implements Subject {
        int x = rand.nextInt(0, 100);
        if(x <= _updateRate){
             Feed f = nf.getRandomFeed();
-            addFeed(f);
             notifyObservers(f);
        }
     }
-    //Get random feed to analyze, convert it to a String array, thenuse the analysis behavior to get the number
+    //Get random feed to analyze, convert it to a String array, then use the analysis behavior to get the number
     public double analyzeFeed(String w, AnalysisBehavior ab){
         Random rand = new Random();
         int idx = rand.nextInt(0, _feed.size()-1);
@@ -300,35 +299,57 @@ public class Main {
 
         // Create the platforms container and add SMPs
         ArrayList<SocialMediaPlatform> platforms = new ArrayList<>();
-        platforms.add(instagramFactory.createPlatform());
-        platforms.add(facebookFactory.createPlatform());
-        platforms.add(twitterFactory.createPlatform());
+        for(int i =0; i < 3; i++){
+            platforms.add(instagramFactory.createPlatform());
+            platforms.add(facebookFactory.createPlatform());
+            platforms.add(twitterFactory.createPlatform());
+        }
 
         // Create Users and subscribe
         User user1 = new User("Alice");
         User user2 = new User("Chris");
         User user3 = new User("Aaron");
         
-        for(int i = 0; i < platforms.size(); i++){
+        for(int i = 0; i < platforms.size()-6; i++){
             user1.addPlatform(platforms.get(i));
-            user2.addPlatform(platforms.get(i));
-            user3.addPlatform(platforms.get(i));
+            user2.addPlatform(platforms.get(i+3));
+            user3.addPlatform(platforms.get(i+6));
             platforms.get(i).subscribe(user1);
-            platforms.get(i).subscribe(user2);
-            platforms.get(i).subscribe(user3);
+            platforms.get(i+3).subscribe(user2);
+            platforms.get(i+6).subscribe(user3);
         }
+
         // Run a simulation to generate random feeds for the SMPs
         for(int i = 0; i < 20; i++){
             platforms.get(0).generateFeed(nf);
             platforms.get(1).generateFeed(nf);
             platforms.get(2).generateFeed(nf);
+            platforms.get(3).generateFeed(nf);
+            platforms.get(4).generateFeed(nf);
+            platforms.get(5).generateFeed(nf);
+            platforms.get(6).generateFeed(nf);
+            platforms.get(7).generateFeed(nf);
+            platforms.get(8).generateFeed(nf);
         }
 
         // Perform analysis
         AnalysisBehavior ab = new CountAllAnalysis();
         System.out.println(platforms.get(0).analyzeFeed("guess", new CountAllAnalysis()));
+        System.out.println(platforms.get(1).analyzeFeed("and", new CountAllAnalysis()));
+        System.out.println(platforms.get(2).analyzeFeed("of", new CountAllAnalysis()));
+        System.out.println(platforms.get(3).analyzeFeed("play", new CountAllAnalysis()));
+        System.out.println(platforms.get(4).analyzeFeed("ice", new CountAllAnalysis()));
+        System.out.println(platforms.get(5).analyzeFeed("hurricane", new CountAllAnalysis()));
+        System.out.println(platforms.get(6).analyzeFeed("in", new CountAllAnalysis()));
+        System.out.println(platforms.get(7).analyzeFeed("on", new CountAllAnalysis()));
+        System.out.println(platforms.get(8).analyzeFeed("a", new CountAllAnalysis()));
+
+
 
         // Print Users' Contents
+        System.out.println("User 1: \n" + user1.toString());
+        System.out.println("User 2: \n" + user2.toString());
+        System.out.println("User 3: \n" + user3.toString());
 
     }
 
